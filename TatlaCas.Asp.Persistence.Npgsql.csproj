@@ -1,21 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PackageId>TatlaCas.AspCore.Persistence.Npgsql</PackageId>
+    <Version>1.0.1</Version>
+    <Authors>TatlaCas</Authors>
+    <Copyright>TatlaCas</Copyright>
+    <Owners>TatlaCas</Owners>
+    <Title>Base Asp.Net Core Npgsql</Title>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Class1.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.1" />
+    <PackageReference Include="TatlaCas.AspCore.Domain" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".DS_Store" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TatlaCas.Asp.Domain\TatlaCas.Asp.Domain.csproj" />
   </ItemGroup>
 </Project>
