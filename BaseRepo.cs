@@ -9,10 +9,10 @@ using AutoMapper;
 using TatlaCas.Asp.Domain.Models.Common;
 using TatlaCas.Asp.Domain.Repos;
 using TatlaCas.Asp.Domain.Resources;
-using TatlaCas.Asp.Domain.Utils;
-using TatlaCas.Asp.Utils;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using TatlaCas.Asp.Domain;
+using TatlaCas.Asp.Utils.Extensions;
 
 namespace TatlaCas.Asp.Persistence.Npgsql
 {

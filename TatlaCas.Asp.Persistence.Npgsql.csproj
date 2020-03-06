@@ -14,8 +14,9 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.2" />
     <PackageReference Include="TatlaCas.AspCore.Domain" Version="1.0.2" />
+    <PackageReference Include="TatlaCas.AspCore.Utils" Version="1.0.4" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".DS_Store" />

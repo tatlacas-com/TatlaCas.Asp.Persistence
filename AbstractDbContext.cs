@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using TatlaCas.Asp.Utils;
+using TatlaCas.Asp;
+using TatlaCas.Asp.Utils.Extensions;
 
 namespace TatlaCas.Asp.Persistence.Npgsql
 {
