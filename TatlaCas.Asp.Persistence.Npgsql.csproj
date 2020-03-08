@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <PackageId>TatlaCas.AspCore.Persistence.Npgsql</PackageId>
-    <Version>1.0.3</Version>
+    <PackageId>TatlaCas.Asp.Core.Persistence.Npgsql</PackageId>
+    <PackageVersion>2.0.0</PackageVersion>
     <Authors>TatlaCas</Authors>
     <Copyright>TatlaCas</Copyright>
     <Owners>TatlaCas</Owners>
@@ -15,10 +15,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.2" />
-    <PackageReference Include="TatlaCas.AspCore.Domain" Version="1.0.2" />
-    <PackageReference Include="TatlaCas.AspCore.Utils" Version="1.0.6" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove=".DS_Store" />
+    <PackageReference Include="TatlaCas.Asp.Core.Domain" Version="2.0.0" />
+    <PackageReference Include="TatlaCas.Asp.Core.Utils" Version="2.0.0" />
   </ItemGroup>
 </Project>
