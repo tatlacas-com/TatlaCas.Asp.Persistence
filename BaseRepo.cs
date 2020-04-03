@@ -128,12 +128,13 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
         public Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null)
         {
-            return EntitiesWhereAsync(null,orderByExpr,orderByStr, pageSize, page, includeRelationships);
+            return EntitiesWhereAsync(null, orderByExpr, orderByStr, pageSize, page, includeRelationships);
         }
 
-     
+
         public Task<List<TEntity>> EntitiesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
             List<OrderByExpr<TEntity>> orderByExpr, List<OrderByFieldNames> orderByStr = null,
             int pageSize = -1, int page = 0, List<string> includeRelationships = null)
@@ -224,62 +225,68 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
         public Task<TEntity> FirstEntityOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
-        {
-            return Items.FirstOrDefaultAsync(queryExpr);
-        }
-
-        public TEntity FirstEntityOrDefault(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
-        {
-            return Items.FirstOrDefault(queryExpr);
-        }
-
-        public Task<TEntity> FirstEntityOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<OrderByExpr<TEntity>> orderByExpr, List<OrderByFieldNames> orderByStr = null,
-            List<string> includeRelationships = null)
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null)
         {
             var tableQuery = Items.AsQueryable();
             var orderedQueryable = OrderedQueryable(orderByExpr, orderByStr, tableQuery);
 
             if (orderedQueryable != null) tableQuery = orderedQueryable;
-            return tableQuery.FirstOrDefaultAsync(queryExpr);
+            if (queryExpr != null)
+                tableQuery = tableQuery.Where(queryExpr);
+            if (!(includeRelationships?.Count > 0)) return tableQuery.FirstOrDefaultAsync();
+            tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
+            return tableQuery.FirstOrDefaultAsync();
+        }
+
+        public TEntity FirstEntityOrDefault(Expression<Func<TEntity, bool>> queryExpr,
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null)
+        {
+            var tableQuery = Items.AsQueryable();
+            var orderedQueryable = OrderedQueryable(orderByExpr, orderByStr, tableQuery);
+
+            if (orderedQueryable != null) tableQuery = orderedQueryable;
+
+            if (queryExpr != null)
+                tableQuery = tableQuery.Where(queryExpr);
+
+            if (!(includeRelationships?.Count > 0)) return tableQuery.FirstOrDefault();
+            tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
+
+            return tableQuery.FirstOrDefault();
         }
 
         public async Task<List<TResource>> GetResourcesAsync(int pageSize = -1, int page = 0,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null)
         {
-            var entities = await GetEntitiesAsync(pageSize, page, includeRelationships);
+            var entities = await GetEntitiesAsync(pageSize, page, includeRelationships, orderByExpr, orderByStr);
             return ToRes(entities);
         }
 
 
         public async Task<List<TResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
-            int pageSize = -1, int page = 0, List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
+            int pageSize = -1, int page = 0, List<string> includeRelationships = null,
+            List<OrderByExpr<TEntity>> orderByExpr = null, List<OrderByFieldNames> orderByStr = null)
         {
-            var entities = await EntitiesWhereAsync(queryExpr,orderByExpr,orderByStr, pageSize, page, includeRelationships);
+            var entities = await EntitiesWhereAsync(queryExpr, orderByExpr, orderByStr, pageSize, page,
+                includeRelationships);
             return ToRes(entities);
         }
 
-       
+
         public Task<int> CountAsync(Expression<Func<TEntity, bool>> queryExpr = null)
         {
             return queryExpr != null ? Items.CountAsync(queryExpr) : Items.CountAsync();
         }
 
-        public async Task<List<TResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<OrderByExpr<TEntity>> orderByExpr, List<OrderByFieldNames> orderByStr = null,
-            int pageSize = -1, int page = 0, List<string> includeRelationships = null)
-        {
-            var entities =
-                await EntitiesWhereAsync(queryExpr, orderByExpr, orderByStr, pageSize, page, includeRelationships);
-            return ToRes(entities);
-        }
 
         public async Task<TResource> FirstResourceOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null)
         {
-            var entities = await FirstEntityOrDefaultAsync(queryExpr, includeRelationships);
+            var entities = await FirstEntityOrDefaultAsync(queryExpr, includeRelationships,orderByExpr,orderByStr);
             return ToRes(entities);
         }
 

@@ -100,9 +100,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         Task<List<TResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr, int pageSize = -1,
             int page = 0, List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null);
 
-          Task<List<TResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<OrderByExpr<TEntity>> orderByExpr, List<OrderByFieldNames> orderByStr = null,
-            int pageSize = -1, int page = 0, List<string> includeRelationships = null);
+        
 
         #endregion
 

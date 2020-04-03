@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>TatlaCas.Asp.Core.Persistence.Npgsql</PackageId>
-    <PackageVersion>2.0.2</PackageVersion>
+    <PackageVersion>2.0.3</PackageVersion>
     <Authors>TatlaCas</Authors>
     <Copyright>TatlaCas</Copyright>
     <Owners>TatlaCas</Owners>
