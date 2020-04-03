@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using TatlaCas.Asp.Domain.Models.Common;
-using TatlaCas.Asp.Domain.Repos;
 using TatlaCas.Asp.Domain.Resources;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -19,15 +18,15 @@ namespace TatlaCas.Asp.Persistence.Npgsql
     public abstract class BaseRepo<TEntity, TResource, TAppContext> : IRepo<TEntity, TResource>
         where TEntity : class, IEntity where TResource : IResource where TAppContext : AbstractDbContext
     {
-        private readonly TAppContext AdminDbContext;
+        private readonly TAppContext _dbContext;
         private DbSet<TEntity> Items { get; }
         private readonly IMapper _mapper;
 
-        protected BaseRepo(TAppContext adminDbContext, IMapper mapper)
+        protected BaseRepo(TAppContext dbContext, IMapper mapper)
         {
-            AdminDbContext = adminDbContext;
+            _dbContext = dbContext;
             _mapper = mapper;
-            Items = AdminDbContext.Set<TEntity>();
+            Items = _dbContext.Set<TEntity>();
         }
 
         public async Task<int> InsertAsync(List<TEntity> input)
@@ -113,11 +112,11 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
                     idVals.Remove(idVals.Length - 2, 2);
 
-                    AdminDbContext.Database.BeginTransaction();
-                    var updatedCount = AdminDbContext.Database.ExecuteSqlRaw(
+                    _dbContext.Database.BeginTransaction();
+                    var updatedCount = _dbContext.Database.ExecuteSqlRaw(
                         $"update \"{tableType.Name}\" set {fieldsWithVals} where \"Id\" IN ({idVals}) ",
                         objectList);
-                    AdminDbContext.Database.CommitTransaction();
+                    _dbContext.Database.CommitTransaction();
                     return updatedCount > 0;
                 }
                 catch (Exception e)
@@ -129,18 +128,12 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
         public Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0,
-            List<string> includeRelationships = null)
+            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
         {
-            return EntitiesWhereAsync(null, pageSize, page, includeRelationships);
+            return EntitiesWhereAsync(null,orderByExpr,orderByStr, pageSize, page, includeRelationships);
         }
 
-        public Task<List<TEntity>> EntitiesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
-            int pageSize = -1, int page = 0, List<string> includeRelationships = null)
-        {
-            return EntitiesWhereAsync(queryExpr, null, pageSize: pageSize, page: page,
-                includeRelationships: includeRelationships);
-        }
-
+     
         public Task<List<TEntity>> EntitiesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
             List<OrderByExpr<TEntity>> orderByExpr, List<OrderByFieldNames> orderByStr = null,
             int pageSize = -1, int page = 0, List<string> includeRelationships = null)
@@ -231,13 +224,13 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
         public Task<TEntity> FirstEntityOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null)
+            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
         {
             return Items.FirstOrDefaultAsync(queryExpr);
         }
 
         public TEntity FirstEntityOrDefault(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null)
+            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
         {
             return Items.FirstOrDefault(queryExpr);
         }
@@ -254,7 +247,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
         public async Task<List<TResource>> GetResourcesAsync(int pageSize = -1, int page = 0,
-            List<string> includeRelationships = null)
+            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
         {
             var entities = await GetEntitiesAsync(pageSize, page, includeRelationships);
             return ToRes(entities);
@@ -262,19 +255,13 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
 
         public async Task<List<TResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
-            int pageSize = -1, int page = 0, List<string> includeRelationships = null)
+            int pageSize = -1, int page = 0, List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
         {
-            var entities = await EntitiesWhereAsync(queryExpr, pageSize, page, includeRelationships);
+            var entities = await EntitiesWhereAsync(queryExpr,orderByExpr,orderByStr, pageSize, page, includeRelationships);
             return ToRes(entities);
         }
 
-        public async Task<List<TResource>> ResourcesAsync(int pageSize = -1, int page = 0,
-            List<string> includeRelationships = null)
-        {
-            var entities = await EntitiesWhereAsync(null, pageSize, page, includeRelationships);
-            return ToRes(entities);
-        }
-
+       
         public Task<int> CountAsync(Expression<Func<TEntity, bool>> queryExpr = null)
         {
             return queryExpr != null ? Items.CountAsync(queryExpr) : Items.CountAsync();
@@ -290,7 +277,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
         public async Task<TResource> FirstResourceOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null)
+            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null)
         {
             var entities = await FirstEntityOrDefaultAsync(queryExpr, includeRelationships);
             return ToRes(entities);
@@ -315,7 +302,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         {
             try
             {
-                return await AdminDbContext.SaveChangesAsync();
+                return await _dbContext.SaveChangesAsync();
             }
             catch (Exception e)
             {
@@ -326,7 +313,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
         protected virtual void SaveChanges()
         {
-            AdminDbContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
     }
 
