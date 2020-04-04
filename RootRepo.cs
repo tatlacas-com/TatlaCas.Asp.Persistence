@@ -20,12 +20,10 @@ namespace TatlaCas.Asp.Persistence.Npgsql
     {
         private readonly TAppContext _dbContext;
         private DbSet<TEntity> Items { get; }
-        private readonly IMapper _mapper;
 
-        protected RootRepo(TAppContext dbContext, IMapper mapper)
+        protected RootRepo(TAppContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
             Items = _dbContext.Set<TEntity>();
         }
 
@@ -295,15 +293,9 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             return entities.Select(ToRes).ToList();
         }
 
-        public virtual IResource ToRes(TEntity entity)
-        {
-            return _mapper.Map<TEntity, IResource>(entity);
-        }
+        public abstract IResource ToRes(TEntity entity);
 
-        public virtual TEntity ToEntity(IResource resource)
-        {
-            return _mapper.Map<IResource, TEntity>(resource);
-        }
+        public abstract TEntity ToEntity(IResource resource);
 
         protected virtual async Task<int> SaveChangesAsync()
         {
@@ -328,7 +320,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
     public abstract class RootReadOnlyRepo<TEntity, TAppContext> : RootRepo<TEntity, TAppContext>
         where TEntity : class, IEntity  where TAppContext : AbstractDbContext
     {
-        protected RootReadOnlyRepo(TAppContext appDbContext, IMapper mapper) : base(appDbContext, mapper)
+        protected RootReadOnlyRepo(TAppContext appDbContext, IMapper mapper) : base(appDbContext)
         {
         }
 
