@@ -214,11 +214,14 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             List<string> includeRelationships)
         {
             if (!(includeRelationships?.Count > 0)) return tableQuery.ToListAsync();
-            foreach (var include in includeRelationships)
-            {
-                tableQuery = tableQuery.Include(include);
-            }
 
+            tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
+            return FinalizeAndExecuteQuery(tableQuery, includeRelationships);
+        }
+
+        protected virtual Task<List<TEntity>> FinalizeAndExecuteQuery(IQueryable<TEntity> tableQuery,
+            List<string> includeRelationships)
+        {
             return tableQuery?.ToListAsync();
         }
 
@@ -284,7 +287,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
             List<OrderByFieldNames> orderByStr = null)
         {
-            var entities = await FirstEntityOrDefaultAsync(queryExpr, includeRelationships,orderByExpr,orderByStr);
+            var entities = await FirstEntityOrDefaultAsync(queryExpr, includeRelationships, orderByExpr, orderByStr);
             return ToRes(entities);
         }
 
@@ -318,7 +321,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
 
     public abstract class RootReadOnlyRepo<TEntity, TAppContext> : RootRepo<TEntity, TAppContext>
-        where TEntity : class, IEntity  where TAppContext : AbstractDbContext
+        where TEntity : class, IEntity where TAppContext : AbstractDbContext
     {
         protected RootReadOnlyRepo(TAppContext appDbContext, IMapper mapper) : base(appDbContext)
         {
