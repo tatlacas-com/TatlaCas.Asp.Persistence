@@ -8,7 +8,7 @@ using TatlaCas.Asp.Domain.Resources;
 
 namespace TatlaCas.Asp.Persistence.Npgsql
 {
-    public interface IRepo<TEntity, TResource> where TEntity : IEntity where TResource : IResource
+    public interface IRepo<TEntity> where TEntity : IEntity
     {
         #region Insert
 
@@ -73,11 +73,12 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         #region Get First Entity
 
         Task<TEntity> FirstEntityOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null);
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null);
 
         TEntity FirstEntityOrDefault(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null);
-
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null);
 
         #endregion
 
@@ -90,32 +91,33 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         /// <param name="page">page number, starts at 1</param>
         /// <param name="includeRelationships"></param>
         /// <returns></returns>
-        Task<List<TResource>> GetResourcesAsync(int pageSize = -1, int page = 0,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null);
+        Task<List<IResource>> GetResourcesAsync(int pageSize = -1, int page = 0,
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null);
 
         #endregion
 
         #region Get Resources Where
 
-        Task<List<TResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr, int pageSize = -1,
-            int page = 0, List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null);
-
-        
+        Task<List<IResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr, int pageSize = -1,
+            int page = 0, List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null);
 
         #endregion
 
         #region Get First Resource
 
-        Task<TResource> FirstResourceOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null,List<OrderByExpr<TEntity>> orderByExpr=null, List<OrderByFieldNames> orderByStr = null);
+        Task<IResource> FirstResourceOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
+            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null);
 
         #endregion
 
         #region Entities To Resources
 
-        List<TResource> ToRes(IEnumerable<TEntity> entities);
-        TResource ToRes(TEntity entity);
-        TEntity ToEntity(TResource resource);
+        List<IResource> ToRes(IEnumerable<TEntity> entities);
+        IResource ToRes(TEntity entity);
+        TEntity ToEntity(IResource resource);
 
         #endregion
 

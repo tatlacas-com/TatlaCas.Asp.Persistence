@@ -15,14 +15,14 @@ using TatlaCas.Asp.Utils.Extensions;
 
 namespace TatlaCas.Asp.Persistence.Npgsql
 {
-    public abstract class BaseRepo<TEntity, TResource, TAppContext> : IRepo<TEntity, TResource>
-        where TEntity : class, IEntity where TResource : IResource where TAppContext : AbstractDbContext
+    public abstract class RootRepo<TEntity, TAppContext> : IRepo<TEntity>
+        where TEntity : class, IEntity where TAppContext : AbstractDbContext
     {
         private readonly TAppContext _dbContext;
         private DbSet<TEntity> Items { get; }
         private readonly IMapper _mapper;
 
-        protected BaseRepo(TAppContext dbContext, IMapper mapper)
+        protected RootRepo(TAppContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -257,7 +257,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             return tableQuery.FirstOrDefault();
         }
 
-        public async Task<List<TResource>> GetResourcesAsync(int pageSize = -1, int page = 0,
+        public async Task<List<IResource>> GetResourcesAsync(int pageSize = -1, int page = 0,
             List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
             List<OrderByFieldNames> orderByStr = null)
         {
@@ -266,7 +266,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
 
-        public async Task<List<TResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
+        public async Task<List<IResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
             int pageSize = -1, int page = 0, List<string> includeRelationships = null,
             List<OrderByExpr<TEntity>> orderByExpr = null, List<OrderByFieldNames> orderByStr = null)
         {
@@ -282,7 +282,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
 
-        public async Task<TResource> FirstResourceOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
+        public async Task<IResource> FirstResourceOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
             List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
             List<OrderByFieldNames> orderByStr = null)
         {
@@ -290,19 +290,19 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             return ToRes(entities);
         }
 
-        public virtual List<TResource> ToRes(IEnumerable<TEntity> entities)
+        public virtual List<IResource> ToRes(IEnumerable<TEntity> entities)
         {
             return entities.Select(ToRes).ToList();
         }
 
-        public virtual TResource ToRes(TEntity entity)
+        public virtual IResource ToRes(TEntity entity)
         {
-            return _mapper.Map<TEntity, TResource>(entity);
+            return _mapper.Map<TEntity, IResource>(entity);
         }
 
-        public virtual TEntity ToEntity(TResource resource)
+        public virtual TEntity ToEntity(IResource resource)
         {
-            return _mapper.Map<TResource, TEntity>(resource);
+            return _mapper.Map<IResource, TEntity>(resource);
         }
 
         protected virtual async Task<int> SaveChangesAsync()
@@ -325,10 +325,10 @@ namespace TatlaCas.Asp.Persistence.Npgsql
     }
 
 
-    public abstract class ReadOnlyRepo<TEntity, TResource, TAppContext> : BaseRepo<TEntity, TResource, TAppContext>
-        where TEntity : class, IEntity where TResource : IResource where TAppContext : AbstractDbContext
+    public abstract class RootReadOnlyRepo<TEntity, TAppContext> : RootRepo<TEntity, TAppContext>
+        where TEntity : class, IEntity  where TAppContext : AbstractDbContext
     {
-        protected ReadOnlyRepo(TAppContext appDbContext, IMapper mapper) : base(appDbContext, mapper)
+        protected RootReadOnlyRepo(TAppContext appDbContext, IMapper mapper) : base(appDbContext, mapper)
         {
         }
 
