@@ -57,7 +57,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         /// <param name="orderByExpr"></param>
         /// <param name="orderByStr"></param>
         /// <returns></returns>
-        Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0, List<string> includeRelationships = null,
+        Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0, List<Expression<Func<TEntity, object>>> includeRelationships = null,
             List<OrderByExpr<TEntity>> orderByExpr = null, List<OrderByFieldNames> orderByStr = null);
 
         #endregion
@@ -66,18 +66,18 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
         Task<List<TEntity>> EntitiesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
             List<OrderByExpr<TEntity>> orderByExpr = null, List<OrderByFieldNames> orderByStr = null,
-            int pageSize = -1, int page = 0, List<string> includeRelationships = null);
+            int pageSize = -1, int page = 0, List<Expression<Func<TEntity, object>>> includeRelationships = null);
 
         #endregion
 
         #region Get First Entity
 
         Task<TEntity> FirstEntityOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
             List<OrderByFieldNames> orderByStr = null);
 
         TEntity FirstEntityOrDefault(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
             List<OrderByFieldNames> orderByStr = null);
 
         #endregion
@@ -92,7 +92,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         /// <param name="includeRelationships"></param>
         /// <returns></returns>
         Task<List<IResource>> GetResourcesAsync(int pageSize = -1, int page = 0,
-            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
             List<OrderByFieldNames> orderByStr = null);
 
         #endregion
@@ -100,7 +100,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         #region Get Resources Where
 
         Task<List<IResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr, int pageSize = -1,
-            int page = 0, List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            int page = 0, List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
             List<OrderByFieldNames> orderByStr = null);
 
         #endregion
@@ -108,7 +108,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         #region Get First Resource
 
         Task<IResource> FirstResourceOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<string> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
             List<OrderByFieldNames> orderByStr = null);
 
         #endregion
