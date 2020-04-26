@@ -16,8 +16,6 @@ using TatlaCas.Asp.Utils.Extensions;
 
 namespace TatlaCas.Asp.Persistence.Npgsql
 {
-   
-
     public abstract class RootRepo<TEntity, TAppContext> : IRepo<TEntity>
         where TEntity : class, IEntity where TAppContext : AbstractDbContext
     {
@@ -29,6 +27,8 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             _dbContext = dbContext;
             Items = _dbContext.Set<TEntity>();
         }
+
+        #region Insert
 
         public async Task<int> InsertAsync(List<TEntity> input)
         {
@@ -56,6 +56,10 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         {
             await Items.AddAsync(input);
         }
+
+        #endregion
+
+        #region Update
 
         public virtual Task<bool> UpdateAsync(TEntity input)
         {
@@ -128,27 +132,34 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             });
         }
 
+        #endregion
+
+        #region Get Entities
+
         public Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0,
-            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
-            List<OrderByFieldNames> orderByStr = null)
+            List<Expression<Func<TEntity, object>>> includeRelationships = null,
+            List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null, RepoLocale repoLocale = RepoLocale.Default)
         {
-            return EntitiesWhereAsync(null, orderByExpr, orderByStr, pageSize, page, includeRelationships);
+            return EntitiesWhereAsync(null, orderByExpr, orderByStr, pageSize, page, includeRelationships,repoLocale);
         }
 
 
         public Task<List<TEntity>> EntitiesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<OrderByExpr<TEntity>> orderByExpr, List<OrderByFieldNames> orderByStr = null,
-            int pageSize = -1, int page = 0, List<Expression<Func<TEntity, object>>> includeRelationships = null)
+            List<OrderByExpr<TEntity>> orderByExpr = null, List<OrderByFieldNames> orderByStr = null,
+            int pageSize = -1, int page = 0, List<Expression<Func<TEntity, object>>> includeRelationships = null,
+            RepoLocale repoLocale = RepoLocale.Default)
         {
             return GetEntitiesInternal(queryExpr, pageSize, page, orderByExpr, orderByStr,
-                includeRelationships);
+                includeRelationships,repoLocale);
         }
 
 
         protected virtual Task<List<TEntity>> GetEntitiesInternal(Expression<Func<TEntity, bool>> query,
             int pageSize,
             int page, List<OrderByExpr<TEntity>> orderByExpr, List<OrderByFieldNames> orderByStr = null,
-            List<Expression<Func<TEntity, object>>> includeRelationships = null)
+            List<Expression<Func<TEntity, object>>> includeRelationships = null,
+            RepoLocale repoLocale = RepoLocale.Default)
         {
             var tableQuery = Items.AsQueryable();
             var orderedQueryable = OrderedQueryable(orderByExpr, orderByStr, tableQuery);
@@ -157,7 +168,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
             if (query != null)
                 tableQuery = tableQuery.Where(query);
-            if (pageSize <= 0) return QueryAsync(tableQuery, includeRelationships);
+            if (pageSize <= 0) return QueryAsync(tableQuery, includeRelationships,repoLocale);
 
             if (page > 1)
             {
@@ -166,8 +177,45 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
             tableQuery = tableQuery.Take(pageSize);
 
-            return QueryAsync(tableQuery, includeRelationships);
+            return QueryAsync(tableQuery, includeRelationships,repoLocale);
         }
+
+        public Task<TEntity> FirstEntityOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
+            List<Expression<Func<TEntity, object>>> includeRelationships = null,
+            List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null, RepoLocale repoLocale = RepoLocale.Default)
+        {
+            var tableQuery = Items.AsQueryable();
+            var orderedQueryable = OrderedQueryable(orderByExpr, orderByStr, tableQuery);
+
+            if (orderedQueryable != null) tableQuery = orderedQueryable;
+            if (queryExpr != null)
+                tableQuery = tableQuery.Where(queryExpr);
+            if (!(includeRelationships?.Count > 0)) return tableQuery.FirstOrDefaultAsync();
+            tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
+            return tableQuery.FirstOrDefaultAsync();
+        }
+
+        public TEntity FirstEntityOrDefault(Expression<Func<TEntity, bool>> queryExpr,
+            List<Expression<Func<TEntity, object>>> includeRelationships = null,
+            List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null, RepoLocale repoLocale = RepoLocale.Default)
+        {
+            var tableQuery = Items.AsQueryable();
+            var orderedQueryable = OrderedQueryable(orderByExpr, orderByStr, tableQuery);
+
+            if (orderedQueryable != null) tableQuery = orderedQueryable;
+
+            if (queryExpr != null)
+                tableQuery = tableQuery.Where(queryExpr);
+
+            if (!(includeRelationships?.Count > 0)) return tableQuery.FirstOrDefault();
+            tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
+
+            return tableQuery.FirstOrDefault();
+        }
+
+        #endregion
 
         private IOrderedQueryable<TEntity> OrderedQueryable(List<OrderByExpr<TEntity>> orderByExpr,
             List<OrderByFieldNames> orderByStr,
@@ -214,7 +262,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
 
         private Task<List<TEntity>> QueryAsync(IQueryable<TEntity> tableQuery,
-            List<Expression<Func<TEntity, object>>> includeRelationships)
+            List<Expression<Func<TEntity, object>>> includeRelationships, RepoLocale repoLocale = RepoLocale.Default)
         {
             if (!(includeRelationships?.Count > 0)) return tableQuery.ToListAsync();
             tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
@@ -222,61 +270,34 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         }
 
         protected virtual Task<List<TEntity>> FinalizeAndExecuteQuery(IQueryable<TEntity> tableQuery,
-            List<Expression<Func<TEntity, object>>> includeRelationships)
+            List<Expression<Func<TEntity, object>>> includeRelationships, RepoLocale repoLocale = RepoLocale.Default)
         {
             return tableQuery?.ToListAsync();
         }
 
-        public Task<TEntity> FirstEntityOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
-            List<OrderByFieldNames> orderByStr = null)
-        {
-            var tableQuery = Items.AsQueryable();
-            var orderedQueryable = OrderedQueryable(orderByExpr, orderByStr, tableQuery);
-
-            if (orderedQueryable != null) tableQuery = orderedQueryable;
-            if (queryExpr != null)
-                tableQuery = tableQuery.Where(queryExpr);
-            if (!(includeRelationships?.Count > 0)) return tableQuery.FirstOrDefaultAsync();
-            tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
-            return tableQuery.FirstOrDefaultAsync();
-        }
-
-        public TEntity FirstEntityOrDefault(Expression<Func<TEntity, bool>> queryExpr,
-            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
-            List<OrderByFieldNames> orderByStr = null)
-        {
-            var tableQuery = Items.AsQueryable();
-            var orderedQueryable = OrderedQueryable(orderByExpr, orderByStr, tableQuery);
-
-            if (orderedQueryable != null) tableQuery = orderedQueryable;
-
-            if (queryExpr != null)
-                tableQuery = tableQuery.Where(queryExpr);
-
-            if (!(includeRelationships?.Count > 0)) return tableQuery.FirstOrDefault();
-            tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
-
-            return tableQuery.FirstOrDefault();
-        }
+        #region Get Resources
 
         public async Task<List<IResource>> GetResourcesAsync(int pageSize = -1, int page = 0,
-            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
-            List<OrderByFieldNames> orderByStr = null)
+            List<Expression<Func<TEntity, object>>> includeRelationships = null,
+            List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null, RepoLocale repoLocale = RepoLocale.Default)
         {
-            var entities = await GetEntitiesAsync(pageSize, page, includeRelationships, orderByExpr, orderByStr);
+            var entities = await GetEntitiesAsync(pageSize, page, includeRelationships, orderByExpr, orderByStr,repoLocale);
             return ToRes(entities);
         }
 
 
         public async Task<List<IResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
             int pageSize = -1, int page = 0, List<Expression<Func<TEntity, object>>> includeRelationships = null,
-            List<OrderByExpr<TEntity>> orderByExpr = null, List<OrderByFieldNames> orderByStr = null)
+            List<OrderByExpr<TEntity>> orderByExpr = null, List<OrderByFieldNames> orderByStr = null,
+            RepoLocale repoLocale = RepoLocale.Default)
         {
             var entities = await EntitiesWhereAsync(queryExpr, orderByExpr, orderByStr, pageSize, page,
-                includeRelationships);
+                includeRelationships,repoLocale);
             return ToRes(entities);
         }
+
+        #endregion
 
 
         public Task<int> CountAsync(Expression<Func<TEntity, bool>> queryExpr = null)
@@ -286,12 +307,16 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
 
         public async Task<IResource> FirstResourceOrDefaultAsync(Expression<Func<TEntity, bool>> queryExpr,
-            List<Expression<Func<TEntity, object>>> includeRelationships = null, List<OrderByExpr<TEntity>> orderByExpr = null,
-            List<OrderByFieldNames> orderByStr = null)
+            List<Expression<Func<TEntity, object>>> includeRelationships = null,
+            List<OrderByExpr<TEntity>> orderByExpr = null,
+            List<OrderByFieldNames> orderByStr = null, RepoLocale repoLocale = RepoLocale.Default)
         {
-            var entities = await FirstEntityOrDefaultAsync(queryExpr, includeRelationships, orderByExpr, orderByStr);
+            var entities = await FirstEntityOrDefaultAsync(queryExpr, includeRelationships, orderByExpr, orderByStr,repoLocale);
             return ToRes(entities);
         }
+
+
+        #region To Resource/ To Entity
 
         public virtual List<IResource> ToRes(IEnumerable<TEntity> entities)
         {
@@ -301,6 +326,10 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         public abstract IResource ToRes(TEntity entity);
 
         public abstract TEntity ToEntity(IResource resource);
+
+        #endregion
+
+        #region Save Changes
 
         protected virtual async Task<int> SaveChangesAsync()
         {
@@ -319,6 +348,8 @@ namespace TatlaCas.Asp.Persistence.Npgsql
         {
             _dbContext.SaveChanges();
         }
+
+        #endregion
     }
 
 
