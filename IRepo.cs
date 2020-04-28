@@ -107,6 +107,7 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
         #endregion
 
+        Expression<Func<TEntity, bool>> SearchQuery(string search, RepoLocale repoLocale = RepoLocale.Default);
         #region Get Resources Where
 
         Task<List<IResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr, int pageSize = -1,

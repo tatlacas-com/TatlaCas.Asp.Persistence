@@ -293,6 +293,8 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             return ToRes(entities);
         }
 
+        public abstract Expression<Func<TEntity, bool>> SearchQuery(string search, RepoLocale repoLocale = RepoLocale.Default);
+
 
         public async Task<List<IResource>> ResourcesWhereAsync(Expression<Func<TEntity, bool>> queryExpr,
             int pageSize = -1, int page = 0, List<Expression<Func<TEntity, object>>> includeRelationships = null,
