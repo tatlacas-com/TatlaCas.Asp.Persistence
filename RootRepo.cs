@@ -150,16 +150,16 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             int pageSize = -1, int page = 0, List<Expression<Func<TEntity, object>>> includeRelationships = null,
             RepoLocale repoLocale = RepoLocale.Default)
         {
-            return GetEntitiesInternal(queryExpr, pageSize, page, orderByExpr, orderByStr,
-                includeRelationships, repoLocale);
+            return GetEntitiesInternal(queryExpr, pageSize, page, orderByExpr, repoLocale, orderByStr,
+                includeRelationships);
         }
 
 
         protected virtual Task<List<TEntity>> GetEntitiesInternal(Expression<Func<TEntity, bool>> query,
             int pageSize,
-            int page, List<OrderByExpr<TEntity>> orderByExpr, List<OrderByFieldNames> orderByStr = null,
-            List<Expression<Func<TEntity, object>>> includeRelationships = null,
-            RepoLocale repoLocale = RepoLocale.Default)
+            int page, List<OrderByExpr<TEntity>> orderByExpr,
+            RepoLocale repoLocale, List<OrderByFieldNames> orderByStr,
+            List<Expression<Func<TEntity, object>>> includeRelationships)
         {
             var tableQuery = Items.AsQueryable();
             var orderedQueryable = OrderedQueryable(orderByExpr, orderByStr, tableQuery);
@@ -262,15 +262,16 @@ namespace TatlaCas.Asp.Persistence.Npgsql
 
 
         private Task<List<TEntity>> QueryAsync(IQueryable<TEntity> tableQuery,
-            List<Expression<Func<TEntity, object>>> includeRelationships, RepoLocale repoLocale = RepoLocale.Default)
+            List<Expression<Func<TEntity, object>>> includeRelationships, RepoLocale repoLocale)
         {
-            AddRepoSpecificIncludes(ref includeRelationships);
+            AddRepoSpecificIncludes(ref includeRelationships, repoLocale);
             if (!(includeRelationships?.Count > 0)) return tableQuery.ToListAsync();
             tableQuery = includeRelationships.Aggregate(tableQuery, (current, include) => current.Include(include));
             return FinalizeAndExecuteQuery(tableQuery, includeRelationships);
         }
 
-        protected virtual void AddRepoSpecificIncludes(ref List<Expression<Func<TEntity, object>>> includeRelationships)
+        protected virtual void AddRepoSpecificIncludes(ref List<Expression<Func<TEntity, object>>> includeRelationships,
+            RepoLocale repoLocale)
         {
         }
 
