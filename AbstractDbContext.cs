@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using TatlaCas.Asp;
-using TatlaCas.Asp.Utils.Extensions;
+using TatlaCas.Asp.Core.Util.Extensions;
 
-namespace TatlaCas.Asp.Persistence.Npgsql
+namespace TatlaCas.Asp.Core.Persistence
 {
     public abstract class AbstractDbContext : DbContext
     {
@@ -17,14 +16,15 @@ namespace TatlaCas.Asp.Persistence.Npgsql
             base.OnModelCreating(builder);
         }
 
-        protected void EnforceOnModelCreatingRules(List<Type> types, ModelBuilder builder)
+        protected void EnforceOnModelCreatingRules(List<Type> types, ModelBuilder builder,
+            Action<ModelBuilder, Type> finishEnforceModelCreating, bool includeSubDirTypes = false)
         {
             types.ForEach(typ =>
             {
                 typ.Assembly
-                    .CreatableTypesInNs(typ.Namespace)
+                    .CreatableTypesInNs(typ.Namespace, includeSubDirTypes)
                     .WhenPersistable()
-                    .EnforceOnModelCreatingRules(builder);
+                    .EnforceOnModelCreatingRules(builder, finishEnforceModelCreating);
             });
         }
     }

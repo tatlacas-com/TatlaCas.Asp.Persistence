@@ -9,13 +9,17 @@
     <Owners>TatlaCas</Owners>
     <Title>Base Asp.Net Core Npgsql</Title>
     <IsPackable>true</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.3" />
-    <PackageReference Include="TatlaCas.Asp.Core.Domain" Version="2.0.5" />
-    <PackageReference Include="TatlaCas.Asp.Core.Utils" Version="2.0.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\TatlaCas.Asp.Core.Util\TatlaCas.Asp.Core.Util.csproj" />
+    <ProjectReference Include="..\TatlaCas.Asp.Domain\TatlaCas.Asp.Domain.csproj" />
   </ItemGroup>
 </Project>
