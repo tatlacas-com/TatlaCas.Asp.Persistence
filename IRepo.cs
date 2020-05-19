@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TatlaCas.Asp.Core.Util.Resources;
 using TatlaCas.Asp.Domain.Models.Common;
+using TatlaCas.Asp.Core.Util.Resources;
 
 namespace TatlaCas.Asp.Core.Persistence
 {
