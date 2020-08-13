@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TatlaCas.Asp.Domain.Models.Common;
-using TatlaCas.Asp.Core.Util.Resources;
 
 namespace TatlaCas.Asp.Core.Persistence
 {
@@ -77,10 +76,5 @@ namespace TatlaCas.Asp.Core.Persistence
     }
 
   
-
-    public interface IRepo<TEntity, TResource> : IRepo<TEntity> where TEntity : class, IEntity
-        where TResource : IResource
-    {
-    }
 
 }

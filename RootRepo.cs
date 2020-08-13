@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using TatlaCas.Asp.Domain.Models.Common;
 using Microsoft.EntityFrameworkCore;
-using TatlaCas.Asp.Core.Util.Resources;
 
 namespace TatlaCas.Asp.Core.Persistence
 {
@@ -141,16 +139,14 @@ namespace TatlaCas.Asp.Core.Persistence
         {
             var tableQuery = Items.AsQueryable();
 
-            if (pageSize <= 0) return QueryAsync(tableQuery, customizeQuery);
-
+            if (pageSize <= 0) return QueryAsync(tableQuery, customizeQuery).ToListAsync();
+            tableQuery = QueryAsync(tableQuery, customizeQuery);
             if (page > 1)
             {
                 tableQuery = tableQuery.Skip(pageSize * (page - 1));
             }
 
-            tableQuery = tableQuery.Take(pageSize);
-
-            return QueryAsync(tableQuery, customizeQuery);
+            return tableQuery.Take(pageSize).ToListAsync();
         }
 
         public Task<TEntity> FirstEntityOrDefaultAsync(
@@ -175,12 +171,12 @@ namespace TatlaCas.Asp.Core.Persistence
         #endregion
 
 
-        private Task<List<TEntity>> QueryAsync(IQueryable<TEntity> tableQuery,
+        private IQueryable<TEntity> QueryAsync(IQueryable<TEntity> tableQuery,
             Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null)
         {
             if (customizeQuery != null)
                 tableQuery = customizeQuery(tableQuery);
-            return tableQuery.ToListAsync();
+            return tableQuery;
         }
 
         public Task<int> CountAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null)
@@ -216,7 +212,7 @@ namespace TatlaCas.Asp.Core.Persistence
     public abstract class RootReadOnlyRepo<TEntity, TAppContext> : RootRepo<TEntity, TAppContext>
         where TEntity : class, IEntity where TAppContext : AbstractDbContext
     {
-        protected RootReadOnlyRepo(TAppContext appDbContext, IMapper mapper) : base(appDbContext)
+        protected RootReadOnlyRepo(TAppContext appDbContext) : base(appDbContext)
         {
         }
 
@@ -240,7 +236,7 @@ namespace TatlaCas.Asp.Core.Persistence
             throw new NotSupportedException();
         }
 
-       
+
         protected override Task<int> SaveChangesAsync()
         {
             throw new NotSupportedException();
@@ -252,18 +248,4 @@ namespace TatlaCas.Asp.Core.Persistence
         }
     }
 
-    public abstract class RootRepo<TEntity, TResource, TAppContext> : RootRepo<TEntity, TAppContext>
-        where TEntity : class, IEntity
-        where TResource : IResource
-        where TAppContext : AbstractDbContext
-    {
-        protected readonly IMapper Mapper;
-        public bool ResourceIsDisplayFormModel { get; set; }
-        public string ViewKey { get; set; }
-
-        public RootRepo(TAppContext dbContext, IMapper mapper) : base(dbContext)
-        {
-            Mapper = mapper;
-        }
-    }
 }
