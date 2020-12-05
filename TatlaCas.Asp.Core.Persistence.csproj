@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <PackageId>TatlaCas.Asp.Core.Persistence.Npgsql</PackageId>
     <PackageVersion>2.0.13</PackageVersion>
     <Authors>TatlaCas</Authors>
@@ -10,6 +10,7 @@
     <Title>Base Asp.Net Core Npgsql</Title>
     <IsPackable>true</IsPackable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
 
