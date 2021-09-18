@@ -15,7 +15,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
   </ItemGroup>
 
 
@@ -24,6 +24,6 @@
     <ProjectReference Include="..\TatlaCas.Asp.Domain\TatlaCas.Asp.Domain.csproj" />
    </ItemGroup>
     <ItemGroup>
-        <Folder Include="Service"/>
+        <Folder Include="Service" />
     </ItemGroup>
 </Project>
