@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TatlaCas.Asp.Domain.Models.Common;
 using Microsoft.EntityFrameworkCore;
@@ -19,32 +20,41 @@ namespace TatlaCas.Asp.Core.Persistence
             Items = _dbContext.Set<TEntity>();
         }
 
+        public void DetachAll()
+        {
+           var entityEntries = _dbContext.ChangeTracker.Entries().ToList();
+
+            foreach (var entityEntry in entityEntries)
+                entityEntry.State = EntityState.Detached;
+        }
+
         #region Insert
 
-        public async Task<int> InsertAsync(List<TEntity> input)
+        public async Task<int> InsertAsync(List<TEntity> input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate = null)
         {
-            await InsertInternalAsync(input);
+            await InsertInternalAsync(input,ifExistingPredicate);
             return await SaveChangesAsync();
         }
 
-        public async Task<int> InsertAsync(TEntity input)
+        public async Task<int> InsertAsync(TEntity input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate = null)
         {
-            await InsertInternalAsync(input);
+            await InsertInternalAsync(input,ifExistingPredicate);
             return await SaveChangesAsync();
         }
 
 
-        protected virtual async Task InsertInternalAsync(List<TEntity> input)
+        protected virtual async Task InsertInternalAsync(List<TEntity> input,Func<TEntity,Expression<Func<TEntity, bool>>> alreadyExistsPredicate)
         {
             if (!(input?.Count > 0)) return;
             foreach (var entity in input)
             {
-                await InsertInternalAsync(entity);
+                await InsertInternalAsync(entity,alreadyExistsPredicate);
             }
         }
 
-        protected virtual async Task InsertInternalAsync(TEntity input)
+        protected virtual async Task InsertInternalAsync(TEntity input,Func<TEntity,Expression<Func<TEntity, bool>>> alreadyExistsPredicate)
         {
+            if (alreadyExistsPredicate != null && await Items.AnyAsync(alreadyExistsPredicate(input))) return;
             await Items.AddAsync(input);
         }
 
@@ -206,6 +216,11 @@ namespace TatlaCas.Asp.Core.Persistence
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            _dbContext.Dispose();
+        }
     }
 
 
@@ -216,12 +231,12 @@ namespace TatlaCas.Asp.Core.Persistence
         {
         }
 
-        protected override Task InsertInternalAsync(List<TEntity> input)
+        protected override Task InsertInternalAsync(List<TEntity> input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate)
         {
             throw new NotSupportedException();
         }
 
-        protected override Task InsertInternalAsync(TEntity input)
+        protected override Task InsertInternalAsync(TEntity input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate)
         {
             throw new NotSupportedException();
         }

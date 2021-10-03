@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TatlaCas.Asp.Domain.Models.Common;
 
 namespace TatlaCas.Asp.Core.Persistence
 {
-    public interface IRepo<TEntity> where TEntity : IEntity
+    public interface IRepo<TEntity> : IDisposable where TEntity : IEntity
     {
+        public void DetachAll();
         #region Insert
 
-        Task<int> InsertAsync(List<TEntity> input);
-        Task<int> InsertAsync(TEntity input);
+        Task<int> InsertAsync(List<TEntity> input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate = null);
+        Task<int> InsertAsync(TEntity input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate = null);
 
         #endregion
 
