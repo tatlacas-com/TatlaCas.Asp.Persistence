@@ -34,11 +34,11 @@ namespace TatlaCas.Asp.Core.Persistence
 
             foreach (var entityEntry in entries)
             {
-                ((IPersistableEntity)entityEntry.Entity).UpdatedAt = DateTime.Now;
+                ((IPersistableEntity)entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
 
                 if (entityEntry.State == EntityState.Added)
                 {
-                    ((IPersistableEntity)entityEntry.Entity).CreatedAt = DateTime.Now;
+                    ((IPersistableEntity)entityEntry.Entity).CreatedAt = DateTime.UtcNow;
                 }
             }
         }
