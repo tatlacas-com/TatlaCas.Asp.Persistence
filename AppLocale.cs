@@ -2,7 +2,7 @@
 
 namespace TatlaCas.Asp.Core.Persistence;
 
-  public enum StayLocale
+  public enum AppLocale
     {
         [Description("Default")] Default,
         [Description("Afrikaans (Namibia)")] AfNa,
