@@ -5,78 +5,74 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TatlaCas.Asp.Domain.Models.Common;
 
-namespace TatlaCas.Asp.Core.Persistence
+namespace TatlaCas.Asp.Core.Persistence;
+
+public interface IRepo<TEntity> : IDisposable where TEntity : IEntity
 {
-    public interface IRepo<TEntity> : IDisposable where TEntity : IEntity
-    {
-        public void DetachAll();
-        #region Insert
+    public void DetachAll();
+    #region Insert
 
-        Task<int> InsertAsync(List<TEntity> input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate = null);
-        Task<int> InsertAsync(TEntity input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate = null);
+    Task<int> InsertAsync(List<TEntity> input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate = null);
+    Task<int> InsertAsync(TEntity input,Func<TEntity,Expression<Func<TEntity, bool>>> ifExistingPredicate = null);
 
-        #endregion
+    #endregion
 
-        /*#region Insert or Update
+    /*#region Insert or Update
 
-        TEntity InsertOrUpdate(TEntity input);
-        void InsertOrUpdate(List<TEntity> input);
-        Task InsertOrUpdateAsync(List<TEntity> input);
-        Task InsertOrUpdateAsync(TEntity input);
+    TEntity InsertOrUpdate(TEntity input);
+    void InsertOrUpdate(List<TEntity> input);
+    Task InsertOrUpdateAsync(List<TEntity> input);
+    Task InsertOrUpdateAsync(TEntity input);
 
-        #endregion*/
+    #endregion*/
 
-        #region Update
+    #region Update
 
-        Task<bool> UpdateAsync(TEntity input);
-        Task<bool> UpdateAsync(List<TEntity> input);
+    Task<bool> UpdateAsync(TEntity input);
+    Task<bool> UpdateAsync(List<TEntity> input);
 
-        #endregion
+    #endregion
 
-        #region Update Where
+    #region Update Where
 
-        /*/// <summary>
-        /// 
-        /// </summary>
-        /// <param name="fields">Anonymous Type object with the Fields to update</param>
-        /// <param name="queryExpr">Query with the condition to prompt update</param>
-        /// <returns></returns>
-        Task<bool> UpdateFieldsWhereAsync(object fields, Expression<Func<TEntity, bool>> queryExpr);*/
+    /*/// <summary>
+    /// 
+    /// </summary>
+    /// <param name="fields">Anonymous Type object with the Fields to update</param>
+    /// <param name="queryExpr">Query with the condition to prompt update</param>
+    /// <returns></returns>
+    Task<bool> UpdateFieldsWhereAsync(object fields, Expression<Func<TEntity, bool>> queryExpr);*/
 
-        #endregion
+    #endregion
 
 
-        #region Get Entities
+    #region Get Entities
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pageSize">Maximum number of records to return. Set -1 to return all</param>
-        /// <param name="page">page number, starts at 1</param>
-        /// <param name="customizeQuery"></param>
-        /// <returns></returns>
-        Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0,
-            Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pageSize">Maximum number of records to return. Set -1 to return all</param>
+    /// <param name="page">page number, starts at 1</param>
+    /// <param name="customizeQuery"></param>
+    /// <returns></returns>
+    Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
 
-        #endregion
+    #endregion
 
       
-        #region Get First Entity
+    #region Get First Entity
 
-        Task<TEntity> FirstEntityOrDefaultAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
+    Task<TEntity> FirstEntityOrDefaultAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
 
-        TEntity FirstEntityOrDefault(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
+    TEntity FirstEntityOrDefault(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
 
-        #endregion
+    #endregion
 
 
-        #region Count
+    #region Count
 
-        Task<int> CountAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
+    Task<int> CountAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
 
-        #endregion
-    }
-
-  
-
+    #endregion
 }
