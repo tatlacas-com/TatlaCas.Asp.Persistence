@@ -11,13 +11,15 @@ namespace TatlaCas.Asp.Core.Persistence;
 public abstract class RootRepo<TEntity, TAppContext> : IRepo<TEntity>
     where TEntity : class, IEntity where TAppContext : AbstractDbContext
 {
-    private readonly TAppContext _dbContext;
-    private DbSet<TEntity> Items { get; }
+    public readonly TAppContext _dbContext;
+    public DbContext DbContext => _dbContext;
+
+    public DbSet<TEntity> Items { get; }
 
     protected RootRepo(TAppContext dbContext)
     {
-        _dbContext = dbContext;
-        Items = _dbContext.Set<TEntity>();
+        this._dbContext = dbContext;
+        Items = this._dbContext.Set<TEntity>();
     }
 
     public void DetachAll()

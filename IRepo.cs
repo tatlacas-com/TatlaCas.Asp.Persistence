@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TatlaCas.Asp.Domain.Models.Common;
 
 namespace TatlaCas.Asp.Core.Persistence;
 
-public interface IRepo<TEntity> : IDisposable where TEntity : IEntity
+public interface IRepo<TEntity> : IDisposable where TEntity : class, IEntity
 {
+    public DbSet<TEntity> Items { get; }
+    public DbContext DbContext { get; }
+
     public void DetachAll();
     #region Insert
 
