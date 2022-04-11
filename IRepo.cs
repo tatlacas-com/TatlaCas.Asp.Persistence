@@ -60,7 +60,7 @@ public interface IRepo<TEntity> : IDisposable where TEntity : class, IEntity
     /// <param name="customizeQuery"></param>
     /// <returns></returns>
     Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
+        Func<DbSet<TEntity>, IQueryable<TEntity>> customizeQuery = null);
 
     #endregion
 
@@ -76,7 +76,7 @@ public interface IRepo<TEntity> : IDisposable where TEntity : class, IEntity
 
     #region Count
 
-    Task<int> CountAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null);
+    Task<int> CountAsync(Func<DbSet<TEntity>, IQueryable<TEntity>> customizeQuery = null);
 
     #endregion
 }

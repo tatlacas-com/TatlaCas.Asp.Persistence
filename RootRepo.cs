@@ -140,25 +140,23 @@ public abstract class RootRepo<TEntity, TAppContext> : IRepo<TEntity>
     #region Get Entities
 
     public Task<List<TEntity>> GetEntitiesAsync(int pageSize = -1, int page = 0,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null)
+        Func<DbSet<TEntity>, IQueryable<TEntity>> customizeQuery = null)
     {
         return GetEntitiesInternal(pageSize, page, customizeQuery);
     }
 
 
     protected virtual Task<List<TEntity>> GetEntitiesInternal(int pageSize,
-        int page, Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null)
+        int page, Func<DbSet<TEntity>, IQueryable<TEntity>> customizeQuery = null)
     {
-        var tableQuery = Items.AsQueryable();
-
-        if (pageSize <= 0) return QueryAsync(tableQuery, customizeQuery).ToListAsync();
-        tableQuery = QueryAsync(tableQuery, customizeQuery);
+        if (pageSize <= 0) return QueryAsync(Items, customizeQuery).ToListAsync();
+        var queryable = QueryAsync(Items, customizeQuery);
         if (page > 1)
         {
-            tableQuery = tableQuery.Skip(pageSize * (page - 1));
+            queryable = queryable.Skip(pageSize * (page - 1));
         }
 
-        return tableQuery.Take(pageSize).ToListAsync();
+        return queryable.Take(pageSize).ToListAsync();
     }
 
     public Task<TEntity> FirstEntityOrDefaultAsync(
@@ -183,18 +181,15 @@ public abstract class RootRepo<TEntity, TAppContext> : IRepo<TEntity>
     #endregion
 
 
-    private IQueryable<TEntity> QueryAsync(IQueryable<TEntity> tableQuery,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null)
+    private IQueryable<TEntity> QueryAsync(DbSet<TEntity> tableQuery,
+        Func<DbSet<TEntity>, IQueryable<TEntity>> customizeQuery = null)
     {
-        if (customizeQuery != null)
-            tableQuery = customizeQuery(tableQuery);
-        return tableQuery;
+        return customizeQuery != null ? customizeQuery(tableQuery) : tableQuery;
     }
 
-    public Task<int> CountAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>> customizeQuery = null)
+    public Task<int> CountAsync(Func<DbSet<TEntity>, IQueryable<TEntity>> customizeQuery = null)
     {
-        var tableQuery = Items.AsQueryable();
-        return customizeQuery != null ? customizeQuery(tableQuery).CountAsync() : tableQuery.CountAsync();
+        return customizeQuery != null ? customizeQuery(Items).CountAsync() : Items.CountAsync();
     }
 
     #region Save Changes
