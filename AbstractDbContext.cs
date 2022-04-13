@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using TatlaCas.Asp.Core.Util.Extensions;
+using TatlaCas.Asp.Util.Extensions;
 using TatlaCas.Asp.Domain.Models.Common;
 
-namespace TatlaCas.Asp.Core.Persistence;
+namespace TatlaCas.Asp.Persistence;
 
 public abstract class AbstractDbContext : DbContext
 {

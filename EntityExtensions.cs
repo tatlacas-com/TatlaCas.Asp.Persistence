@@ -4,7 +4,7 @@ using System.Linq;
 using TatlaCas.Asp.Domain.Models.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace TatlaCas.Asp.Core.Persistence;
+namespace TatlaCas.Asp.Persistence;
 
 public static class EntityExtensions
 {

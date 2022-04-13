@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TatlaCas.Asp.Domain.Models.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace TatlaCas.Asp.Core.Persistence;
+namespace TatlaCas.Asp.Persistence;
 
 public abstract class RootRepo<TEntity, TAppContext> : IRepo<TEntity>
     where TEntity : class, IEntity where TAppContext : AbstractDbContext

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <PackageId>TatlaCas.Asp.Persistence</PackageId>
+    <PackageVersion>2.0.13</PackageVersion>
+    <Authors>TatlaCas</Authors>
+    <Copyright>TatlaCas</Copyright>
+    <Owners>TatlaCas</Owners>
+    <Title>Base Asp.Net Persistence</Title>
+    <IsPackable>true</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="TatlaCas.Asp.Domain" Version="2.0.10" />
+    <PackageReference Include="TatlaCas.Asp.Utils" Version="2.0.3" />
+  </ItemGroup>
+</Project>

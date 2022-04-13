@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace TatlaCas.Asp.Core.Persistence;
+namespace TatlaCas.Asp.Persistence;
 
   public enum AppLocale
     {

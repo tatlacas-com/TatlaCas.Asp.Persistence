@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TatlaCas.Asp.Domain.Models.Common;
 
-namespace TatlaCas.Asp.Core.Persistence;
+namespace TatlaCas.Asp.Persistence;
 
 public interface IRepo<TEntity> : IDisposable where TEntity : class, IEntity
 {
