@@ -29,7 +29,10 @@ jobs:
         dotnet-version: '6.0.x' # SDK Version to use.
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
+   
+    - name: Add GPR Source
+      run: dotnet nuget add source --username tatlacas --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/tatlacas-com/index.json"
+ 
     - name: Install dependencies
       run: dotnet restore
     
@@ -39,8 +42,6 @@ jobs:
     - name: Create the package
       run: dotnet pack  --no-restore --configuration Release --include-symbols
       
-    - name: Add GPR Source
-      run: dotnet nuget add source --username tatlacas --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/tatlacas-com/index.json"
       
     - name: Publish the package to GPR
       run: dotnet nuget push bin/Release/*.nupkg --api-key ${{ secrets.PACKAGE_API_KEY }} --source "github" --skip-duplicate
