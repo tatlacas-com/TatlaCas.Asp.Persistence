@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <PackageId>TatlaCas.Asp.Persistence</PackageId>
-        <PackageVersion>2.0.13</PackageVersion>
+        <PackageVersion>2.0.14</PackageVersion>
         <Authors>TatlaCas</Authors>
         <Copyright>TatlaCas</Copyright>
         <Owners>TatlaCas</Owners>

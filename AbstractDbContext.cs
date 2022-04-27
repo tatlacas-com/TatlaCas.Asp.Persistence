@@ -34,11 +34,11 @@ public abstract class AbstractDbContext : DbContext
 
         foreach (var entityEntry in entries)
         {
-            ((IPersistableEntity)entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
+            ((IPersistableEntity)entityEntry.Entity).UpdatedAt =  DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
 
             if (entityEntry.State == EntityState.Added)
             {
-                ((IPersistableEntity)entityEntry.Entity).CreatedAt = DateTime.UtcNow;
+                ((IPersistableEntity)entityEntry.Entity).CreatedAt =  DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
             }
         }
     }
