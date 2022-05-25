@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <PackageId>TatlaCas.Asp.Persistence</PackageId>
-        <PackageVersion>2.0.15</PackageVersion>
+        <PackageVersion>2.0.16</PackageVersion>
         <Authors>TatlaCas</Authors>
         <Copyright>TatlaCas</Copyright>
         <Owners>TatlaCas</Owners>
@@ -17,7 +17,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="11.0.1" />
-        <PackageReference Include="TatlaCas.Asp.Domain" Version="2.0.10" />
-        <PackageReference Include="TatlaCas.Asp.Utils" Version="2.0.5" />
+        <PackageReference Include="TatlaCas.Asp.Domain" Version="2.0.11" />
+        <PackageReference Include="TatlaCas.Asp.Utils" Version="2.0.6" />
     </ItemGroup>
 </Project>
